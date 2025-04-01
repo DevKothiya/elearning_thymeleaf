@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Create New Course</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" >
+  <script>
+    function addLesson() {
+        const lessonsContainer = document.getElementById('lessons-container');
+        const lessonIndex = lessonsContainer.children.length;
+
+        const lessonDiv = document.createElement('div');
+        lessonDiv.className = 'lesson mb-3';
+        lessonDiv.setAttribute('data-index', lessonIndex); // Store index for removal
+
+        lessonDiv.innerHTML = `
+            <div class="form-group">
+                <label for="lessons[${lessonIndex}].title">Lesson Title:</label>
+                <input type="text" class="form-control" name="lessons[${lessonIndex}].title" required />
+            </div>
+            <div class="form-group">
+                <label for="lessons[${lessonIndex}].content">Lesson Content:</label>
+                <textarea class="form-control" name="lessons[${lessonIndex}].content" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="lessons[${lessonIndex}].duration">Lesson Duration (minutes):</label>
+                <input type="number" class="form-control" name="lessons[${lessonIndex}].duration" min="1" required />
+            </div>
+            <button type="button" class="btn btn-danger remove-lesson">Remove This Lesson</button>
+            <hr />
+        `;
+
+        lessonsContainer.appendChild(lessonDiv);
+
+        // Add event listener to remove the current lesson when clicking the button
+        lessonDiv.querySelector('.remove-lesson').addEventListener('click', function() {
+            removeLesson(lessonDiv);
+        });
+    }
+
+    function removeLesson(lessonDiv) {
+        const lessonsContainer = document.getElementById('lessons-container');
+        lessonsContainer.removeChild(lessonDiv);
+        // Reindex remaining lessons
+        Array.from(lessonsContainer.children).forEach((lesson, index) => {
+            const lessonInputs = lesson.querySelectorAll('input, textarea');
+            lessonInputs.forEach(input => {
+                const name = input.getAttribute('name');
+                input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
+            });
+        });
+    }
+  </script>
+</head>
+<body class="container mt-5">
+<h1 class="mb-4">Create New Course</h1>
+<form th:action="@{/instructor/courses/addCourse}" th:method="post">
+  <div class="form-group">
+    <label for="title">Course Title:</label>
+    <input type="text" class="form-control" id="title" name="title" required />
+  </div>
+  <div class="form-group">
+    <label for="description">Course Description:</label>
+    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+  </div>
+  <div class="form-group">
+    <label for="category">Course Category:</label>
+    <input type="text" class="form-control" id="category" name="category" required />
+  </div>
+  <div class="form-group">
+    <label for="price">Course Price:</label>
+    <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" />
+  </div>
+
+  <h2 class="mt-4">Lessons</h2>
+  <div id="lessons-container"></div>
+  <div class="mb-3">
+    <button type="button" class="btn btn-primary" onclick="addLesson()">Add Lesson</button>
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-success">Save Course</button>
+  </div>
+</form>
+</body>
+</html>
