@@ -32,16 +32,15 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public Course addCourse(Course course, Model model) {
-        course.getLessons().forEach(lesson -> lesson.setCourse(course));
-        System.out.println(" here "+ course.getId());
-        if(course.getId()==null) {
+        @Override
+        public Course addCourse(Course course, Model model) {
+            course.getLessons().forEach(lesson -> lesson.setCourse(course));
+
             course.setId(UUID.randomUUID().toString());
+
+            course.setInstructor((User) model.getAttribute("loggedInUser"));
+            return courseRepository.save(course);
         }
-        course.setInstructor((User) model.getAttribute("loggedInUser"));
-        return courseRepository.save(course);
-    }
 
     @Override
     public List<Course> getAllCourses(){

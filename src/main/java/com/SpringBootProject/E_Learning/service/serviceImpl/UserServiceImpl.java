@@ -22,9 +22,8 @@ public class UserServiceImpl implements UserService {
     public UserRepository userRepository;
     @Override
     public User saveUser(User user) {
-        System.out.println("User id='"+user.getId()+"'");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setId(UUID.randomUUID().toString());
+        user.setId(UUID.randomUUID().toString());
         user.setProvider(Provider.SELF);
         user.setRole(Role.ROLE_STUDENT);
         userRepository.save(user);
@@ -33,10 +32,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveInstructor(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if(user.getId()==null) {
-            user.setId(UUID.randomUUID().toString());
-        }
+        user.setId(UUID.randomUUID().toString());
         user.setRole(Role.ROLE_INSTRUCTOR);
+        user.setProvider(Provider.SELF);
         userRepository.save(user);
         return user;
     }
